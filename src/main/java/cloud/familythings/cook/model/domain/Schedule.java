@@ -1,0 +1,59 @@
+package cloud.familythings.cook.model.domain;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+
+@Document("schedules")
+public class Schedule {
+
+    @Id
+    private String id;
+
+    @NotNull
+    @FutureOrPresent
+    private LocalDateTime when;
+
+    @NotBlank
+    private String dishId;
+
+    @Transient
+    private Dish dish;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getWhen() {
+        return when;
+    }
+
+    public void setWhen(LocalDateTime when) {
+        this.when = when;
+    }
+
+    public String getDishId() {
+        return dishId;
+    }
+
+    public void setDishId(String dishId) {
+        this.dishId = dishId;
+    }
+
+    public Dish getDish() {
+        return dish;
+    }
+
+    public void setDish(Dish dish) {
+        this.dish = dish;
+    }
+}
