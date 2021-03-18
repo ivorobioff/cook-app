@@ -25,7 +25,7 @@ public class Ingredient {
     private String unit;
 
     @Transient
-    private boolean usedByDish = false;
+    private Boolean usedByDish;
 
     public String getId() {
         return id;

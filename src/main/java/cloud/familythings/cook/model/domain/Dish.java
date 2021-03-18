@@ -1,5 +1,7 @@
 package cloud.familythings.cook.model.domain;
 
+import cloud.familythings.cook.repository.IngredientRepository;
+import eu.techmoodivns.support.validation.validator.Exists;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,7 +22,7 @@ public class Dish {
     private String notes;
 
     @NotEmpty
-    private List<String> ingredientIds;
+    private List<@Exists(repository = IngredientRepository.class) String> ingredientIds;
 
     @Transient
     private List<Ingredient> ingredients;

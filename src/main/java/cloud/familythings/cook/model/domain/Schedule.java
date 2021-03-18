@@ -1,5 +1,7 @@
 package cloud.familythings.cook.model.domain;
 
+import cloud.familythings.cook.repository.DishRepository;
+import eu.techmoodivns.support.validation.validator.Exists;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,6 +22,7 @@ public class Schedule {
     private LocalDateTime scheduledOn;
 
     @NotBlank
+    @Exists(repository = DishRepository.class)
     private String dishId;
 
     @Transient

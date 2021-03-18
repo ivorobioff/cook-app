@@ -38,17 +38,7 @@ public class ScheduleService {
         List<Schedule> schedules = scheduleRepository
                 .findAll(Sort.by("when").ascending());
 
-        if (schedules.size() > 0) {
-            Map<String, Ingredient> ingredients = ingredientRepository.findAll().stream()
-                    .collect(toMap(Ingredient::getId, i -> i));
-
-            Map<String, Dish> dishes = dishRepository.findAll().stream()
-                    .peek(dish -> dish.setIngredients(dish.getIngredientIds()
-                            .stream().map(ingredients::get).collect(toList())))
-                    .collect(toMap(Dish::getId, d -> d));
-
-            schedules.forEach(schedule -> schedule.setDish(dishes.get(schedule.getDishId())));
-        }
+        resolveSchedule(schedules);
 
         return schedules;
     }
@@ -57,7 +47,33 @@ public class ScheduleService {
 
         scheduleRepository.save(schedule);
 
+        resolveSchedule(List.of(schedule));
+
         return schedule;
+    }
+
+    private void resolveSchedule(List<Schedule> schedules) {
+        if (schedules.isEmpty()) {
+            return ;
+        }
+
+        Map<String, Ingredient> ingredients = ingredientRepository.findAll().stream()
+                .collect(toMap(Ingredient::getId, i -> i));
+
+        List<Dish> dishes;
+
+        if (schedules.size() > 1) {
+            dishes = dishRepository.findAll();
+        } else {
+            dishes = List.of(dishRepository.findById(schedules.get(0).getDishId()).orElseThrow());
+        }
+
+        Map<String, Dish> normalizedDishes = dishes.stream()
+                .peek(dish -> dish.setIngredients(dish.getIngredientIds()
+                        .stream().map(ingredients::get).collect(toList())))
+                .collect(toMap(Dish::getId, d -> d));
+
+        schedules.forEach(schedule -> schedule.setDish(normalizedDishes.get(schedule.getDishId())));
     }
 
     public void finish(String id, FinishedSchedule finished) {

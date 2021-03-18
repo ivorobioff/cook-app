@@ -58,16 +58,7 @@ public class DishService {
 
         List<Dish> dishes = mongoTemplate.find(query, Dish.class);
 
-        if (dishes.size() > 0) {
-            Map<String, Ingredient> ingredients = ingredientRepository.findAll()
-                    .stream().collect(Collectors.toMap(Ingredient::getId, i -> i));
-
-            dishes.forEach(dish -> {
-                dish.setIngredients(dish.getIngredientIds().stream()
-                        .map(ingredients::get).collect(Collectors.toList()));
-            });
-        }
-
+        resolveDishes(dishes);
 
         return dishes;
     }
@@ -76,7 +67,24 @@ public class DishService {
 
         dishRepository.save(dish);
 
+        resolveDishes(List.of(dish));
+
         return dish;
+    }
+
+    private void resolveDishes(List<Dish> dishes) {
+
+        if (dishes.isEmpty()) {
+            return ;
+        }
+
+        Map<String, Ingredient> ingredients = ingredientRepository.findAll()
+                .stream().collect(Collectors.toMap(Ingredient::getId, i -> i));
+
+        dishes.forEach(dish -> {
+            dish.setIngredients(dish.getIngredientIds().stream()
+                    .map(ingredients::get).collect(Collectors.toList()));
+        });
     }
 
     public void update(String id, Dish updates) {
