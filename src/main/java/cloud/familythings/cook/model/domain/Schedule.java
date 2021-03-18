@@ -17,7 +17,7 @@ public class Schedule {
 
     @NotNull
     @FutureOrPresent
-    private LocalDateTime when;
+    private LocalDateTime scheduledOn;
 
     @NotBlank
     private String dishId;
@@ -33,12 +33,12 @@ public class Schedule {
         this.id = id;
     }
 
-    public LocalDateTime getWhen() {
-        return when;
+    public LocalDateTime getScheduledOn() {
+        return scheduledOn;
     }
 
-    public void setWhen(LocalDateTime when) {
-        this.when = when;
+    public void setScheduledOn(LocalDateTime scheduledOn) {
+        this.scheduledOn = scheduledOn;
     }
 
     public String getDishId() {

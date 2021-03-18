@@ -1,6 +1,5 @@
 package cloud.familythings.cook.model.domain;
 
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,9 +12,8 @@ public class History {
     private String id;
     private String dishId;
     private String notes;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
+    private LocalDateTime scheduledOn;
+    private LocalDateTime finishedAt;
 
     public String getId() {
         return id;
@@ -41,11 +39,19 @@ public class History {
         this.notes = notes;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public void setScheduledOn(LocalDateTime scheduledOn) {
+        this.scheduledOn = scheduledOn;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public LocalDateTime getScheduledOn() {
+        return scheduledOn;
+    }
+
+    public LocalDateTime getFinishedAt() {
+        return finishedAt;
+    }
+
+    public void setFinishedAt(LocalDateTime finishedAt) {
+        this.finishedAt = finishedAt;
     }
 }

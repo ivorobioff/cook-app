@@ -1,6 +1,7 @@
 package cloud.familythings.cook.model.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
@@ -22,6 +23,9 @@ public class Ingredient {
 
     @NotBlank
     private String unit;
+
+    @Transient
+    private boolean usedByDish = false;
 
     public String getId() {
         return id;
@@ -53,5 +57,13 @@ public class Ingredient {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public void setUsedByDish(boolean usedByDish) {
+        this.usedByDish = usedByDish;
+    }
+
+    public boolean isUsedByDish() {
+        return usedByDish;
     }
 }
