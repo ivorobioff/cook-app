@@ -9,9 +9,10 @@ import cloud.familythings.cook.repository.DishRepository;
 import cloud.familythings.cook.repository.HistoryRepository;
 import cloud.familythings.cook.repository.IngredientRepository;
 import cloud.familythings.cook.repository.ScheduleRepository;
+import eu.techmoodivns.support.data.Scope;
+import eu.techmoodivns.support.data.Scopeable;
 import eu.techmoodivns.support.validation.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,9 +35,9 @@ public class ScheduleService {
     @Autowired
     private IngredientRepository ingredientRepository;
 
-    public List<Schedule> getAll() {
+    public List<Schedule> getAll(Scope scope) {
         List<Schedule> schedules = scheduleRepository
-                .findAll(Sort.by("when").ascending());
+                .findAll(new Scopeable(scope)).getContent();
 
         resolveSchedule(schedules);
 
@@ -92,7 +93,7 @@ public class ScheduleService {
         scheduleRepository.delete(schedule);
     }
 
-    public void cancel(String id) {
+    public void remove(String id) {
         scheduleRepository.deleteById(id);
     }
 }
