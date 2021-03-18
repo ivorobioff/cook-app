@@ -24,9 +24,9 @@ public class HistoryController {
     @Autowired
     private HistoryService historyService;
 
-    @GetMapping(path = "/dishes/{dishId}/histories")
+    @GetMapping(path = "/history")
     @ResponseStatus(HttpStatus.OK)
-    public List<History> indexByDishId(@PathVariable String dishId, Scope scope, BindingResult binding) {
+    public List<History> index(@RequestParam String dishId, Scope scope, BindingResult binding) {
 
         if (binding.hasErrors()) {
             throw new InvalidPayloadException(binding);
