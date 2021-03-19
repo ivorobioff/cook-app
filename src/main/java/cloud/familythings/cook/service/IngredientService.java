@@ -1,5 +1,6 @@
 package cloud.familythings.cook.service;
 
+import cloud.familythings.cook.model.domain.Dish;
 import cloud.familythings.cook.model.domain.Ingredient;
 import cloud.familythings.cook.model.filter.IngredientFilter;
 import cloud.familythings.cook.repository.DishRepository;
@@ -48,7 +49,8 @@ public class IngredientService {
 
         if (ingredients.size() > 0) {
             Set<String> usedIds = dishRepository.findAll().stream()
-                    .flatMap(dish -> dish.getIngredientIds().stream())
+                    .flatMap(dish -> dish.getRequiredIngredients().stream())
+                    .map(Dish.RequiredIngredient::getIngredientId)
                     .collect(Collectors.toSet());
 
             ingredients.forEach(ingredient -> ingredient.setUsedByDish(usedIds.contains(ingredient.getId())));

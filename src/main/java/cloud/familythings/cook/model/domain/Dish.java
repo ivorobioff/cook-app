@@ -1,13 +1,17 @@
 package cloud.familythings.cook.model.domain;
 
 import cloud.familythings.cook.repository.IngredientRepository;
+import eu.techmoodivns.support.validation.validator.Distinct;
 import eu.techmoodivns.support.validation.validator.Exists;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Document("dishes")
@@ -22,10 +26,8 @@ public class Dish {
     private String notes;
 
     @NotEmpty
-    private List<@Exists(repository = IngredientRepository.class) String> ingredientIds;
-
-    @Transient
-    private List<Ingredient> ingredients;
+    @Distinct("ingredientId")
+    private List<@Valid RequiredIngredient> requiredIngredients;
 
     public String getId() {
         return id;
@@ -51,19 +53,49 @@ public class Dish {
         this.notes = notes;
     }
 
-    public void setIngredientIds(List<String> ingredientIds) {
-        this.ingredientIds = ingredientIds;
+    public void setRequiredIngredients(List<RequiredIngredient> requiredIngredients) {
+        this.requiredIngredients = requiredIngredients;
     }
 
-    public List<String> getIngredientIds() {
-        return ingredientIds;
+    public List<RequiredIngredient> getRequiredIngredients() {
+        return requiredIngredients;
     }
 
-    public void setIngredients(List<Ingredient> ingredients) {
-        this.ingredients = ingredients;
-    }
+    public static class RequiredIngredient {
 
-    public List<Ingredient> getIngredients() {
-        return ingredients;
+        @NotBlank
+        @Exists(repository = IngredientRepository.class)
+        private String ingredientId;
+
+        @Transient
+        private Ingredient ingredient;
+
+        @NotNull
+        @PositiveOrZero
+        private Integer quantity;
+
+        public void setIngredientId(String ingredientId) {
+            this.ingredientId = ingredientId;
+        }
+
+        public String getIngredientId() {
+            return ingredientId;
+        }
+
+        public void setIngredient(Ingredient ingredient) {
+            this.ingredient = ingredient;
+        }
+
+        public Ingredient getIngredient() {
+            return ingredient;
+        }
+
+        public void setQuantity(Integer quantity) {
+            this.quantity = quantity;
+        }
+
+        public Integer getQuantity() {
+            return quantity;
+        }
     }
 }

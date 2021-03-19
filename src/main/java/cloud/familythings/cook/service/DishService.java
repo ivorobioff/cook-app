@@ -82,8 +82,10 @@ public class DishService {
                 .stream().collect(Collectors.toMap(Ingredient::getId, i -> i));
 
         dishes.forEach(dish -> {
-            dish.setIngredients(dish.getIngredientIds().stream()
-                    .map(ingredients::get).collect(Collectors.toList()));
+            dish.getRequiredIngredients().forEach(requiredIngredient -> {
+                requiredIngredient.setIngredient(
+                        ingredients.get(requiredIngredient.getIngredientId()));
+            });
         });
     }
 
