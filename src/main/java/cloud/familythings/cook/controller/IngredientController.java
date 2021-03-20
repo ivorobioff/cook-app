@@ -35,6 +35,12 @@ public class IngredientController {
         return ingredientService.getAll(filter, scope);
     }
 
+    @GetMapping(path = "/lightweight-ingredients")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Ingredient> lightweightIndex() {
+        return ingredientService.getAllLightweight();
+    }
+
     @PostMapping(path = "/ingredients")
     @ResponseStatus(HttpStatus.OK)
     public Ingredient create(@RequestBody Ingredient ingredient) {

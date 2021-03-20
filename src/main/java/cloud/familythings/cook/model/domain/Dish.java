@@ -8,10 +8,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.*;
 import java.util.List;
 
 @Document("dishes")
@@ -71,7 +68,7 @@ public class Dish {
         private Ingredient ingredient;
 
         @NotNull
-        @PositiveOrZero
+        @Positive
         private Integer quantity;
 
         public void setIngredientId(String ingredientId) {

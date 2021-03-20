@@ -20,6 +20,10 @@ public class DistinctiveValidator implements ConstraintValidator<Distinctive, Li
     @Override
     public boolean isValid(List<?> values, ConstraintValidatorContext context) {
 
+        if (values == null) {
+            return true;
+        }
+
         Set<String> uniqueValues = values.stream()
                 .map(v -> (String) resolveValue(v, field))
                 .collect(Collectors.toSet());

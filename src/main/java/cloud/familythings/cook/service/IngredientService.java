@@ -5,6 +5,7 @@ import cloud.familythings.cook.model.domain.Ingredient;
 import cloud.familythings.cook.model.filter.IngredientFilter;
 import cloud.familythings.cook.repository.DishRepository;
 import cloud.familythings.cook.repository.IngredientRepository;
+import cloud.familythings.cook.util.QueryUtils;
 import eu.techmoodivns.support.data.RegexUtils;
 import eu.techmoodivns.support.data.Scope;
 import eu.techmoodivns.support.data.Scopeable;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+import static java.util.stream.Collectors.*;
 
 import static eu.techmoodivns.support.random.RandomUtils.transportProperties;
 
@@ -36,27 +37,39 @@ public class IngredientService {
 
     public List<Ingredient> getAll(IngredientFilter filter, Scope scope) {
 
-        Query query = new Query();
+        Query ingredientQuery = new Query();
 
         if (filter.getName() != null) {
-            query.addCriteria(Criteria.where("name")
+            ingredientQuery.addCriteria(Criteria.where("name")
                     .regex(RegexUtils.contains(filter.getName())));
         }
 
-        query.with(new Scopeable(scope));
+        ingredientQuery.with(new Scopeable(scope));
 
-        List<Ingredient> ingredients =  mongoTemplate.find(query, Ingredient.class);
+        List<Ingredient> ingredients =  mongoTemplate.find(ingredientQuery, Ingredient.class);
 
         if (ingredients.size() > 0) {
-            Set<String> usedIds = dishRepository.findAll().stream()
+
+            Set<String> ingredientIds = ingredients.stream()
+                    .map(Ingredient::getId)
+                    .collect(toSet());
+
+            Set<String> usedIngredientIds = mongoTemplate
+                    .find(QueryUtils.dishContainsIngredients(ingredientIds), Dish.class)
+                    .stream()
                     .flatMap(dish -> dish.getRequiredIngredients().stream())
                     .map(Dish.RequiredIngredient::getIngredientId)
-                    .collect(Collectors.toSet());
+                    .collect(toSet());
 
-            ingredients.forEach(ingredient -> ingredient.setUsedByDish(usedIds.contains(ingredient.getId())));
+            ingredients.forEach(ingredient ->
+                    ingredient.setUsedByDish(usedIngredientIds.contains(ingredient.getId())));
         }
 
         return ingredients;
+    }
+
+    public List<Ingredient> getAllLightweight() {
+        return ingredientRepository.findAll();
     }
 
     public Ingredient create(Ingredient ingredient) {
@@ -77,7 +90,9 @@ public class IngredientService {
 
     public void remove(String id) {
 
-        if (dishRepository.existsByIngredientIds(id)) {
+        Query query = QueryUtils.dishContainsIngredients(List.of(id));
+
+        if (mongoTemplate.exists(query, Dish.class)) {
             throw new InvalidOperationException("This ingredient cannot be delete because it's used by some of dishes!");
         }
 

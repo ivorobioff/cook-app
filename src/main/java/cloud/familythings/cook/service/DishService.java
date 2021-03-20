@@ -7,6 +7,7 @@ import cloud.familythings.cook.repository.DishRepository;
 import cloud.familythings.cook.repository.HistoryRepository;
 import cloud.familythings.cook.repository.IngredientRepository;
 import cloud.familythings.cook.repository.ScheduleRepository;
+import cloud.familythings.cook.util.QueryUtils;
 import eu.techmoodivns.support.data.Scope;
 import eu.techmoodivns.support.data.RegexUtils;
 import eu.techmoodivns.support.data.Scopeable;
@@ -52,8 +53,8 @@ public class DishService {
                     .regex(RegexUtils.contains(filter.getName())));
         }
 
-        if (filter.getIngredientId() != null) {
-            query.addCriteria(Criteria.where("ingredientIds").is(filter.getIngredientId()));
+        if (filter.getIngredientIds() != null) {
+            QueryUtils.dishContainsIngredients(query, filter.getIngredientIds());
         }
 
         query.with(new Scopeable(scope));
