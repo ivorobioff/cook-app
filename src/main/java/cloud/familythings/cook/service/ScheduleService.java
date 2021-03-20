@@ -16,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import static java.util.stream.Collectors.*;
 
 @Service
@@ -58,23 +58,30 @@ public class ScheduleService {
             return ;
         }
 
-        Map<String, Ingredient> ingredients = ingredientRepository.findAll().stream()
-                .collect(toMap(Ingredient::getId, i -> i));
+        Set<String> usedDishIds = schedules.stream().map(Schedule::getDishId).collect(toSet());
 
-        List<Dish> dishes;
+        Map<String, Dish> usedDishes = new HashMap<>();
 
-        if (schedules.size() > 1) {
-            dishes = dishRepository.findAll();
-        } else {
-            dishes = List.of(dishRepository.findById(schedules.get(0).getDishId()).orElseThrow());
-        }
+        dishRepository.findAllById(usedDishIds)
+                .forEach(dish -> usedDishes.put(dish.getId(), dish));
 
-        Map<String, Dish> normalizedDishes = dishes.stream()
-                .peek(dish -> dish.setIngredients(dish.getIngredientIds()
-                        .stream().map(ingredients::get).collect(toList())))
-                .collect(toMap(Dish::getId, d -> d));
+        Set<String> usedIngredientIds = usedDishes.values().stream()
+                .flatMap(dish -> dish.getRequiredIngredients().stream())
+                .map(Dish.RequiredIngredient::getIngredientId)
+                .collect(toSet());
 
-        schedules.forEach(schedule -> schedule.setDish(normalizedDishes.get(schedule.getDishId())));
+        Map<String, Ingredient> usedIngredients = new HashMap<>();
+
+        ingredientRepository.findAllById(usedIngredientIds)
+                .forEach(ingredient -> usedIngredients.put(ingredient.getId(), ingredient));
+
+        usedDishes.forEach((dishId, dish) -> {
+            dish.getRequiredIngredients().forEach(requiredIngredient ->
+                    requiredIngredient.setIngredient(
+                            usedIngredients.get(requiredIngredient.getIngredientId())));
+        });
+
+        schedules.forEach(schedule -> schedule.setDish(usedDishes.get(schedule.getDishId())));
     }
 
     public void finish(String id, FinishedSchedule finished) {
@@ -82,13 +89,54 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
 
+        List<FinishedSchedule.Waste> wasted = finished.getWastes();
+
+        Set<String> wastedIngredientIds = wasted.stream()
+                .map(FinishedSchedule.Waste::getIngredientId)
+                .collect(toSet());
+
+        Map<String, Ingredient> wastedIngredients = new HashMap<>();
+
+        ingredientRepository.findAllById(wastedIngredientIds)
+                .forEach(ingredient -> wastedIngredients.put(ingredient.getId(), ingredient));
+
+
         History history = new History();
         history.setDishId(schedule.getDishId());
         history.setNotes(finished.getNotes());
         history.setScheduledOn(schedule.getScheduledOn());
         history.setFinishedAt(LocalDateTime.now());
 
+        history.setWastes(wasted.stream()
+                .map(waste -> {
+                    History.Waste historyWaste = new History.Waste();
+                    historyWaste.setIngredientName(
+                            wastedIngredients.get(waste.getIngredientId()).getName());
+                    historyWaste.setQuantity(waste.getQuantity());
+
+                    return historyWaste;
+                }).collect(toList()));
+
         historyRepository.save(history);
+
+        List<Ingredient> changedIngredients = new ArrayList<>();
+
+        wasted.forEach(waste -> {
+            Ingredient ingredient = wastedIngredients.get(waste.getIngredientId());
+            Integer oldQuantity = ingredient.getQuantity();
+            Integer wastedQuantity = waste.getQuantity();
+            int newQuantity = oldQuantity - wastedQuantity;
+
+            if (newQuantity < 0) {
+                newQuantity = 0;
+            }
+
+            ingredient.setQuantity(newQuantity);
+
+            changedIngredients.add(ingredient);
+        });
+
+        ingredientRepository.saveAll(changedIngredients);
 
         scheduleRepository.delete(schedule);
     }

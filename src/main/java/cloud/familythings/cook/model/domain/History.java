@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Document("histories")
 public class History {
@@ -14,6 +15,7 @@ public class History {
     private String notes;
     private LocalDateTime scheduledOn;
     private LocalDateTime finishedAt;
+    private List<Waste> wastes;
 
     public String getId() {
         return id;
@@ -53,5 +55,34 @@ public class History {
 
     public void setFinishedAt(LocalDateTime finishedAt) {
         this.finishedAt = finishedAt;
+    }
+
+    public void setWastes(List<Waste> wastes) {
+        this.wastes = wastes;
+    }
+
+    public List<Waste> getWastes() {
+        return wastes;
+    }
+
+    public static class Waste {
+        private String ingredientName;
+        private Integer quantity;
+
+        public void setIngredientName(String ingredientName) {
+            this.ingredientName = ingredientName;
+        }
+
+        public String getIngredientName() {
+            return ingredientName;
+        }
+
+        public void setQuantity(Integer quantity) {
+            this.quantity = quantity;
+        }
+
+        public Integer getQuantity() {
+            return quantity;
+        }
     }
 }

@@ -17,9 +17,11 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
+import static java.util.stream.Collectors.*;
 
 import static eu.techmoodivns.support.random.RandomUtils.transportProperties;
 
@@ -78,13 +80,20 @@ public class DishService {
             return ;
         }
 
-        Map<String, Ingredient> ingredients = ingredientRepository.findAll()
-                .stream().collect(Collectors.toMap(Ingredient::getId, i -> i));
+        Set<String> usedIngredientIds = dishes.stream()
+                .flatMap(dish -> dish.getRequiredIngredients().stream())
+                .map(Dish.RequiredIngredient::getIngredientId)
+                .collect(toSet());
+
+        Map<String, Ingredient> usedIngredients = new HashMap<>();
+
+        ingredientRepository.findAllById(usedIngredientIds)
+                .forEach(ingredient -> usedIngredients.put(ingredient.getId(), ingredient));
 
         dishes.forEach(dish -> {
             dish.getRequiredIngredients().forEach(requiredIngredient -> {
                 requiredIngredient.setIngredient(
-                        ingredients.get(requiredIngredient.getIngredientId()));
+                        usedIngredients.get(requiredIngredient.getIngredientId()));
             });
         });
     }
