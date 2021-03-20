@@ -1,7 +1,7 @@
 package cloud.familythings.cook.model.domain;
 
 import cloud.familythings.cook.repository.IngredientRepository;
-import eu.techmoodivns.support.validation.validator.Distinct;
+import eu.techmoodivns.support.validation.validator.Distinctive;
 import eu.techmoodivns.support.validation.validator.Exists;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -26,7 +26,7 @@ public class Dish {
     private String notes;
 
     @NotEmpty
-    @Distinct("ingredientId")
+    @Distinctive(byField = "ingredientId")
     private List<@Valid RequiredIngredient> requiredIngredients;
 
     public String getId() {

@@ -8,13 +8,13 @@ import java.util.stream.Collectors;
 
 import static eu.techmoodivns.support.random.RandomUtils.resolveValue;
 
-public class DistinctValidator implements ConstraintValidator<Distinct, List<?>> {
+public class DistinctiveValidator implements ConstraintValidator<Distinctive, List<?>> {
 
     private String field;
 
     @Override
-    public void initialize(Distinct annotation) {
-        field = annotation.value();
+    public void initialize(Distinctive annotation) {
+        field = annotation.byField();
     }
 
     @Override

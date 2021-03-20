@@ -10,13 +10,13 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Documented
-@Constraint(validatedBy = DistinctValidator.class)
+@Constraint(validatedBy = DistinctiveValidator.class)
 @Target({ FIELD })
 @Retention(RUNTIME)
-public @interface Distinct {
+public @interface Distinctive {
     String message() default "must contain unique elements";
 
-    String value();
+    String byField();
 
     Class<?>[] groups() default { };
 
