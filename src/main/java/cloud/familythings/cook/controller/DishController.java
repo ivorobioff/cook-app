@@ -35,6 +35,12 @@ public class DishController {
         return dishService.getAll(filter, scope);
     }
 
+    @GetMapping(path = "/lightweight-dishes")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Dish> lightweightIndex() {
+        return dishService.getAllLightweight();
+    }
+
     @PostMapping(path = "/dishes")
     @ResponseStatus(HttpStatus.OK)
     public Dish create(@RequestBody Dish dish) {
@@ -43,8 +49,8 @@ public class DishController {
 
     @PatchMapping(path = "/dishes/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void update(@PathVariable String id, @RequestBody Dish dish) {
-        dishService.update(id, dish);
+    public Dish update(@PathVariable String id, @RequestBody Dish dish) {
+        return dishService.update(id, dish);
     }
 
     @DeleteMapping(path = "/dishes/{id}")

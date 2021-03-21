@@ -66,6 +66,10 @@ public class DishService {
         return dishes;
     }
 
+    public List<Dish> getAllLightweight() {
+        return dishRepository.findAll();
+    }
+
     public Dish create(Dish dish) {
 
         dishRepository.save(dish);
@@ -99,13 +103,17 @@ public class DishService {
         });
     }
 
-    public void update(String id, Dish updates) {
+    public Dish update(String id, Dish updates) {
         Dish dish = dishRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
 
         transportProperties(updates, dish);
 
         dishRepository.save(dish);
+
+        resolveDishes(List.of(dish));
+
+        return dish;
     }
 
     public void remove(String id) {
