@@ -1,6 +1,7 @@
 package cloud.familythings.cook.service;
 
 import cloud.familythings.cook.model.domain.Dish;
+import cloud.familythings.cook.model.domain.History;
 import cloud.familythings.cook.model.domain.Ingredient;
 import cloud.familythings.cook.model.filter.DishFilter;
 import cloud.familythings.cook.repository.DishRepository;
@@ -18,10 +19,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
 import static java.util.stream.Collectors.*;
 
 import static eu.techmoodivns.support.random.RandomUtils.transportProperties;
@@ -85,21 +84,34 @@ public class DishService {
             return ;
         }
 
-        Set<String> usedIngredientIds = dishes.stream()
-                .flatMap(dish -> dish.getRequiredIngredients().stream())
-                .map(Dish.RequiredIngredient::getIngredientId)
-                .collect(toSet());
+        Set<String> dishIds = new HashSet<>();
+        Set<String> usedIngredientIds = new HashSet<>();
+
+        dishes.forEach(dish -> {
+            usedIngredientIds.addAll(dish.getRequiredIngredients()
+                    .stream()
+                    .map(Dish.RequiredIngredient::getIngredientId)
+                    .collect(toSet()));
+
+            dishIds.add(dish.getId());
+        });
 
         Map<String, Ingredient> usedIngredients = new HashMap<>();
 
         ingredientRepository.findAllById(usedIngredientIds)
                 .forEach(ingredient -> usedIngredients.put(ingredient.getId(), ingredient));
 
+        Set<String> withHistory = historyRepository.findAllByDishIdIn(dishIds).stream()
+                .map(History::getDishId)
+                .collect(toSet());
+
         dishes.forEach(dish -> {
             dish.getRequiredIngredients().forEach(requiredIngredient -> {
                 requiredIngredient.setIngredient(
                         usedIngredients.get(requiredIngredient.getIngredientId()));
             });
+
+            dish.setWithHistory(withHistory.contains(dish.getId()));
         });
     }
 

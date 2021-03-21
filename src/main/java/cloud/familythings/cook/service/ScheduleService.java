@@ -112,6 +112,8 @@ public class ScheduleService {
                     History.Waste historyWaste = new History.Waste();
                     historyWaste.setIngredientName(
                             wastedIngredients.get(waste.getIngredientId()).getName());
+                    historyWaste.setIngredientUnit(
+                            wastedIngredients.get(waste.getIngredientId()).getUnit());
                     historyWaste.setQuantity(waste.getQuantity());
 
                     return historyWaste;

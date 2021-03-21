@@ -67,6 +67,7 @@ public class History {
 
     public static class Waste {
         private String ingredientName;
+        private String ingredientUnit;
         private Integer quantity;
 
         public void setIngredientName(String ingredientName) {
@@ -75,6 +76,14 @@ public class History {
 
         public String getIngredientName() {
             return ingredientName;
+        }
+
+        public void setIngredientUnit(String ingredientUnit) {
+            this.ingredientUnit = ingredientUnit;
+        }
+
+        public String getIngredientUnit() {
+            return ingredientUnit;
         }
 
         public void setQuantity(Integer quantity) {

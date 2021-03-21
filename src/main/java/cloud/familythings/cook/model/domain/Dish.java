@@ -26,6 +26,8 @@ public class Dish {
     @Distinctive(byField = "ingredientId")
     private List<@Valid RequiredIngredient> requiredIngredients;
 
+    private boolean withHistory;
+
     public String getId() {
         return id;
     }
@@ -56,6 +58,14 @@ public class Dish {
 
     public List<RequiredIngredient> getRequiredIngredients() {
         return requiredIngredients;
+    }
+
+    public void setWithHistory(boolean withHistory) {
+        this.withHistory = withHistory;
+    }
+
+    public boolean isWithHistory() {
+        return withHistory;
     }
 
     public static class RequiredIngredient {
