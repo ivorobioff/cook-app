@@ -1,7 +1,6 @@
 package cloud.familythings.cook.service;
 
 import cloud.familythings.cook.model.domain.Dish;
-import cloud.familythings.cook.model.domain.History;
 import cloud.familythings.cook.model.domain.Ingredient;
 import cloud.familythings.cook.model.filter.DishFilter;
 import cloud.familythings.cook.repository.DishRepository;
@@ -19,6 +18,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static java.util.stream.Collectors.*;
@@ -101,9 +101,15 @@ public class DishService {
         ingredientRepository.findAllById(usedIngredientIds)
                 .forEach(ingredient -> usedIngredients.put(ingredient.getId(), ingredient));
 
-        Set<String> withHistory = historyRepository.findAllByDishIdIn(dishIds).stream()
-                .map(History::getDishId)
-                .collect(toSet());
+        Map<String, LocalDateTime> histories = new HashMap<>();
+
+        historyRepository.findAllByDishIdIn(dishIds).forEach(history -> {
+            LocalDateTime lastFinishedAt = histories.get(history.getId());
+
+            if (lastFinishedAt == null || history.getFinishedAt().isAfter(lastFinishedAt)) {
+                histories.put(history.getDishId(), history.getFinishedAt());
+            }
+        });
 
         dishes.forEach(dish -> {
             dish.getRequiredIngredients().forEach(requiredIngredient -> {
@@ -111,7 +117,7 @@ public class DishService {
                         usedIngredients.get(requiredIngredient.getIngredientId()));
             });
 
-            dish.setWithHistory(withHistory.contains(dish.getId()));
+            dish.setLastFinishedAt(histories.get(dish.getId()));
         });
     }
 

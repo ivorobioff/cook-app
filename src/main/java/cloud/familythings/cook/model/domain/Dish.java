@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Document("dishes")
@@ -26,7 +27,7 @@ public class Dish {
     @Distinctive(byField = "ingredientId")
     private List<@Valid RequiredIngredient> requiredIngredients;
 
-    private boolean withHistory;
+    private LocalDateTime lastFinishedAt;
 
     public String getId() {
         return id;
@@ -60,12 +61,12 @@ public class Dish {
         return requiredIngredients;
     }
 
-    public void setWithHistory(boolean withHistory) {
-        this.withHistory = withHistory;
+    public void setLastFinishedAt(LocalDateTime lastFinishedAt) {
+        this.lastFinishedAt = lastFinishedAt;
     }
 
-    public boolean isWithHistory() {
-        return withHistory;
+    public LocalDateTime getLastFinishedAt() {
+        return lastFinishedAt;
     }
 
     public static class RequiredIngredient {
