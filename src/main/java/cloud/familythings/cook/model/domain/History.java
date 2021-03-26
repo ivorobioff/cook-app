@@ -3,7 +3,7 @@ package cloud.familythings.cook.model.domain;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Document("histories")
@@ -13,8 +13,8 @@ public class History {
     private String id;
     private String dishId;
     private String notes;
-    private LocalDateTime scheduledOn;
-    private LocalDateTime finishedAt;
+    private LocalDate scheduledOn;
+    private LocalDate finishedAt;
     private List<Waste> wastes;
 
     public String getId() {
@@ -41,19 +41,19 @@ public class History {
         this.notes = notes;
     }
 
-    public void setScheduledOn(LocalDateTime scheduledOn) {
+    public void setScheduledOn(LocalDate scheduledOn) {
         this.scheduledOn = scheduledOn;
     }
 
-    public LocalDateTime getScheduledOn() {
+    public LocalDate getScheduledOn() {
         return scheduledOn;
     }
 
-    public LocalDateTime getFinishedAt() {
+    public LocalDate getFinishedAt() {
         return finishedAt;
     }
 
-    public void setFinishedAt(LocalDateTime finishedAt) {
+    public void setFinishedAt(LocalDate finishedAt) {
         this.finishedAt = finishedAt;
     }
 

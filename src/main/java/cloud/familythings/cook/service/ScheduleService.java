@@ -15,7 +15,7 @@ import eu.techmoodivns.support.validation.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.*;
 
 import static java.util.stream.Collectors.*;
@@ -101,11 +101,13 @@ public class ScheduleService {
                 .forEach(ingredient -> wastedIngredients.put(ingredient.getId(), ingredient));
 
 
+        LocalDate finishedAt = LocalDate.now();
+
         History history = new History();
         history.setDishId(schedule.getDishId());
         history.setNotes(finished.getNotes());
         history.setScheduledOn(schedule.getScheduledOn());
-        history.setFinishedAt(LocalDateTime.now());
+        history.setFinishedAt(finishedAt);
 
         history.setWastes(wasted.stream()
                 .map(waste -> {
@@ -139,6 +141,13 @@ public class ScheduleService {
         });
 
         ingredientRepository.saveAll(changedIngredients);
+
+        Dish dish = dishRepository.findById(schedule.getDishId())
+                .orElseThrow();
+
+        dish.setLastFinishedAt(finishedAt);
+
+        dishRepository.save(dish);
 
         scheduleRepository.delete(schedule);
     }

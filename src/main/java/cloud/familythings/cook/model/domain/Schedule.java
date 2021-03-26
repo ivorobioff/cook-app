@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Document("schedules")
 public class Schedule {
@@ -19,7 +19,7 @@ public class Schedule {
 
     @NotNull
     @FutureOrPresent
-    private LocalDateTime scheduledOn;
+    private LocalDate scheduledOn;
 
     @NotBlank
     @Exists(repository = DishRepository.class)
@@ -36,11 +36,11 @@ public class Schedule {
         this.id = id;
     }
 
-    public LocalDateTime getScheduledOn() {
+    public LocalDate getScheduledOn() {
         return scheduledOn;
     }
 
-    public void setScheduledOn(LocalDateTime scheduledOn) {
+    public void setScheduledOn(LocalDate scheduledOn) {
         this.scheduledOn = scheduledOn;
     }
 

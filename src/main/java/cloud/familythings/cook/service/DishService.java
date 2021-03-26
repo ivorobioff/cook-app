@@ -18,7 +18,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static java.util.stream.Collectors.*;
@@ -84,7 +83,6 @@ public class DishService {
             return ;
         }
 
-        Set<String> dishIds = new HashSet<>();
         Set<String> usedIngredientIds = new HashSet<>();
 
         dishes.forEach(dish -> {
@@ -92,8 +90,6 @@ public class DishService {
                     .stream()
                     .map(Dish.RequiredIngredient::getIngredientId)
                     .collect(toSet()));
-
-            dishIds.add(dish.getId());
         });
 
         Map<String, Ingredient> usedIngredients = new HashMap<>();
@@ -101,23 +97,12 @@ public class DishService {
         ingredientRepository.findAllById(usedIngredientIds)
                 .forEach(ingredient -> usedIngredients.put(ingredient.getId(), ingredient));
 
-        Map<String, LocalDateTime> histories = new HashMap<>();
-
-        historyRepository.findAllByDishIdIn(dishIds).forEach(history -> {
-            LocalDateTime lastFinishedAt = histories.get(history.getId());
-
-            if (lastFinishedAt == null || history.getFinishedAt().isAfter(lastFinishedAt)) {
-                histories.put(history.getDishId(), history.getFinishedAt());
-            }
-        });
 
         dishes.forEach(dish -> {
             dish.getRequiredIngredients().forEach(requiredIngredient -> {
                 requiredIngredient.setIngredient(
                         usedIngredients.get(requiredIngredient.getIngredientId()));
             });
-
-            dish.setLastFinishedAt(histories.get(dish.getId()));
         });
     }
 

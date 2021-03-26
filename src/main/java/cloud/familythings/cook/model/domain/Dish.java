@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Document("dishes")
@@ -27,7 +27,7 @@ public class Dish {
     @Distinctive(byField = "ingredientId")
     private List<@Valid RequiredIngredient> requiredIngredients;
 
-    private LocalDateTime lastFinishedAt;
+    private LocalDate lastFinishedAt;
 
     public String getId() {
         return id;
@@ -61,11 +61,11 @@ public class Dish {
         return requiredIngredients;
     }
 
-    public void setLastFinishedAt(LocalDateTime lastFinishedAt) {
+    public void setLastFinishedAt(LocalDate lastFinishedAt) {
         this.lastFinishedAt = lastFinishedAt;
     }
 
-    public LocalDateTime getLastFinishedAt() {
+    public LocalDate getLastFinishedAt() {
         return lastFinishedAt;
     }
 
