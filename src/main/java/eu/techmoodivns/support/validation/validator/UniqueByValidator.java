@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static eu.techmoodivns.support.random.RandomUtils.resolveValue;
 import static java.util.Collections.emptyList;
@@ -26,6 +27,8 @@ public class UniqueByValidator implements ConstraintValidator<UniqueBy, Object> 
 
     private Qualifier qualifier;
 
+    private boolean caseInsensitive = false;
+
     @Override
     public void initialize(UniqueBy annotation) {
         this.annotation = annotation;
@@ -35,6 +38,8 @@ public class UniqueByValidator implements ConstraintValidator<UniqueBy, Object> 
         if (qualifierType != NullQualifier.class) {
             qualifier = beanFactory.createBean(qualifierType);
         }
+
+        caseInsensitive = this.annotation.caseInsensitive();
     }
 
     @Override
@@ -63,8 +68,14 @@ public class UniqueByValidator implements ConstraintValidator<UniqueBy, Object> 
 
     private boolean exists(Object source, String value, String id) {
 
-        Query q = new Query()
-                .addCriteria(Criteria.where(annotation.value()).is(value.trim()));
+        Query q = new Query();
+
+        if (caseInsensitive) {
+            q.addCriteria(Criteria.where(annotation.value())
+                    .regex("^" + Pattern.quote(value.trim()) + "$", "i"));
+        } else {
+            q.addCriteria(Criteria.where(annotation.value()).is(value.trim()));
+        }
 
         if (qualifier != null) {
             qualifier.getCriteria().forEach(q::addCriteria);

@@ -3,6 +3,7 @@ package cloud.familythings.cook.model.domain;
 import cloud.familythings.cook.repository.IngredientRepository;
 import eu.techmoodivns.support.validation.validator.Distinctive;
 import eu.techmoodivns.support.validation.validator.Exists;
+import eu.techmoodivns.support.validation.validator.UniqueBy;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -12,6 +13,7 @@ import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.List;
 
+@UniqueBy(value = "name", caseInsensitive = true)
 @Document("dishes")
 public class Dish {
 

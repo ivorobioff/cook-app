@@ -20,6 +20,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface UniqueBy {
     String message() default "must be unique";
 
+    boolean caseInsensitive() default false;
+
     Class<?>[] groups() default { };
 
     Class<? extends Payload>[] payload() default { };
