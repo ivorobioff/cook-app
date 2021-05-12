@@ -11,10 +11,12 @@ import static eu.techmoodivns.support.random.RandomUtils.resolveValue;
 public class DistinctiveValidator implements ConstraintValidator<Distinctive, List<?>> {
 
     private String field;
+    private boolean caseInsensitive = false;
 
     @Override
     public void initialize(Distinctive annotation) {
         field = annotation.byField();
+        caseInsensitive = annotation.caseInsensitive();
     }
 
     @Override
@@ -25,7 +27,15 @@ public class DistinctiveValidator implements ConstraintValidator<Distinctive, Li
         }
 
         Set<String> uniqueValues = values.stream()
-                .map(v -> (String) resolveValue(v, field))
+                .map(v -> {
+                    String resolvedValue = (String) resolveValue(v, field);
+
+                    if (caseInsensitive) {
+                        return resolvedValue.toLowerCase();
+                    }
+
+                    return resolvedValue;
+                })
                 .collect(Collectors.toSet());
 
         return uniqueValues.size() == values.size();

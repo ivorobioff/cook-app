@@ -1,13 +1,10 @@
 package cloud.familythings.cook.service;
 
 import cloud.familythings.cook.model.domain.Dish;
-import cloud.familythings.cook.model.domain.Ingredient;
 import cloud.familythings.cook.model.filter.DishFilter;
 import cloud.familythings.cook.repository.DishRepository;
 import cloud.familythings.cook.repository.HistoryRepository;
-import cloud.familythings.cook.repository.IngredientRepository;
 import cloud.familythings.cook.repository.ScheduleRepository;
-import cloud.familythings.cook.util.QueryUtils;
 import eu.techmoodivns.support.data.Scope;
 import eu.techmoodivns.support.data.RegexUtils;
 import eu.techmoodivns.support.data.Scopeable;
@@ -20,8 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static java.util.stream.Collectors.*;
-
 import static eu.techmoodivns.support.random.RandomUtils.transportProperties;
 
 @Service
@@ -29,9 +24,6 @@ public class DishService {
 
     @Autowired
     private DishRepository dishRepository;
-
-    @Autowired
-    private IngredientRepository ingredientRepository;
 
     @Autowired
     private ScheduleRepository scheduleRepository;
@@ -51,17 +43,14 @@ public class DishService {
                     .regex(RegexUtils.contains(filter.getName())));
         }
 
-        if (filter.getIngredientIds() != null) {
-            QueryUtils.dishContainsIngredients(query, filter.getIngredientIds());
+        if (filter.getNotes() != null) {
+            query.addCriteria(Criteria.where("notes")
+                    .regex(RegexUtils.contains(filter.getNotes())));
         }
 
         query.with(new Scopeable(scope));
 
-        List<Dish> dishes = mongoTemplate.find(query, Dish.class);
-
-        resolveDishes(dishes);
-
-        return dishes;
+        return mongoTemplate.find(query, Dish.class);
     }
 
     public List<Dish> getAllLightweight() {
@@ -72,38 +61,7 @@ public class DishService {
 
         dishRepository.save(dish);
 
-        resolveDishes(List.of(dish));
-
         return dish;
-    }
-
-    private void resolveDishes(List<Dish> dishes) {
-
-        if (dishes.isEmpty()) {
-            return ;
-        }
-
-        Set<String> usedIngredientIds = new HashSet<>();
-
-        dishes.forEach(dish -> {
-            usedIngredientIds.addAll(dish.getRequiredIngredients()
-                    .stream()
-                    .map(Dish.RequiredIngredient::getIngredientId)
-                    .collect(toSet()));
-        });
-
-        Map<String, Ingredient> usedIngredients = new HashMap<>();
-
-        ingredientRepository.findAllById(usedIngredientIds)
-                .forEach(ingredient -> usedIngredients.put(ingredient.getId(), ingredient));
-
-
-        dishes.forEach(dish -> {
-            dish.getRequiredIngredients().forEach(requiredIngredient -> {
-                requiredIngredient.setIngredient(
-                        usedIngredients.get(requiredIngredient.getIngredientId()));
-            });
-        });
     }
 
     public Dish update(String id, Dish updates) {
@@ -113,8 +71,6 @@ public class DishService {
         transportProperties(updates, dish);
 
         dishRepository.save(dish);
-
-        resolveDishes(List.of(dish));
 
         return dish;
     }

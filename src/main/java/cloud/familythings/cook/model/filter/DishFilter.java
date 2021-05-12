@@ -1,10 +1,9 @@
 package cloud.familythings.cook.model.filter;
 
-import java.util.List;
 
 public class DishFilter {
     private String name;
-    private List<String> ingredientIds;
+    private String notes;
 
     public void setName(String name) {
         this.name = name;
@@ -14,11 +13,11 @@ public class DishFilter {
         return name;
     }
 
-    public void setIngredientIds(List<String> ingredientIds) {
-        this.ingredientIds = ingredientIds;
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
-    public List<String> getIngredientIds() {
-        return ingredientIds;
+    public String getNotes() {
+        return notes;
     }
 }

@@ -66,31 +66,32 @@ public class History {
     }
 
     public static class Waste {
-        private String ingredientName;
-        private String ingredientUnit;
-        private Integer quantity;
 
-        public void setIngredientName(String ingredientName) {
-            this.ingredientName = ingredientName;
+        public Waste() {
+
         }
 
-        public String getIngredientName() {
-            return ingredientName;
-        }
-
-        public void setIngredientUnit(String ingredientUnit) {
-            this.ingredientUnit = ingredientUnit;
-        }
-
-        public String getIngredientUnit() {
-            return ingredientUnit;
-        }
-
-        public void setQuantity(Integer quantity) {
+        public Waste(String name, String quantity) {
+            this.name = name;
             this.quantity = quantity;
         }
 
-        public Integer getQuantity() {
+        private String name;
+        private String quantity;
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setQuantity(String quantity) {
+            this.quantity = quantity;
+        }
+
+        public String getQuantity() {
             return quantity;
         }
     }

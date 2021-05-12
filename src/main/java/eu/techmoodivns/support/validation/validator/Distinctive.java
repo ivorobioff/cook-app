@@ -18,6 +18,8 @@ public @interface Distinctive {
 
     String byField();
 
+    boolean caseInsensitive() default false;
+
     Class<?>[] groups() default { };
 
     Class<? extends Payload>[] payload() default { };

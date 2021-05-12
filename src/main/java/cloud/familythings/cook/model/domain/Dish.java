@@ -1,11 +1,8 @@
 package cloud.familythings.cook.model.domain;
 
-import cloud.familythings.cook.repository.IngredientRepository;
 import eu.techmoodivns.support.validation.validator.Distinctive;
-import eu.techmoodivns.support.validation.validator.Exists;
 import eu.techmoodivns.support.validation.validator.UniqueBy;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.Valid;
@@ -26,7 +23,7 @@ public class Dish {
     private String notes;
 
     @NotEmpty
-    @Distinctive(byField = "ingredientId")
+    @Distinctive(byField = "name", caseInsensitive = true)
     private List<@Valid RequiredIngredient> requiredIngredients;
 
     private LocalDate lastFinishedAt;
@@ -74,37 +71,24 @@ public class Dish {
     public static class RequiredIngredient {
 
         @NotBlank
-        @Exists(repository = IngredientRepository.class)
-        private String ingredientId;
+        private String name;
 
-        @Transient
-        private Ingredient ingredient;
+        @NotBlank
+        private String quantity;
 
-        @NotNull
-        @Positive
-        private Integer quantity;
-
-        public void setIngredientId(String ingredientId) {
-            this.ingredientId = ingredientId;
+        public void setName(String name) {
+            this.name = name;
         }
 
-        public String getIngredientId() {
-            return ingredientId;
+        public String getName() {
+            return name;
         }
 
-        public void setIngredient(Ingredient ingredient) {
-            this.ingredient = ingredient;
-        }
-
-        public Ingredient getIngredient() {
-            return ingredient;
-        }
-
-        public void setQuantity(Integer quantity) {
+        public void setQuantity(String quantity) {
             this.quantity = quantity;
         }
 
-        public Integer getQuantity() {
+        public String getQuantity() {
             return quantity;
         }
     }
