@@ -12,7 +12,7 @@ public class FinishedSchedule {
     private String notes;
 
     @NotEmpty
-    @Distinctive(byField = "name", caseInsensitive = true)
+    @Distinctive(byField = "ingredient", caseInsensitive = true)
     private List<@Valid Waste> wastes;
 
     public void setNotes(String notes) {
@@ -34,17 +34,17 @@ public class FinishedSchedule {
     public static class Waste {
 
         @NotBlank
-        private String name;
+        private String ingredient;
 
         @NotBlank
         private String quantity;
 
-        public void setName(String name) {
-            this.name = name;
+        public void setIngredient(String ingredient) {
+            this.ingredient = ingredient;
         }
 
-        public String getName() {
-            return name;
+        public String getIngredient() {
+            return ingredient;
         }
 
         public void setQuantity(String quantity) {

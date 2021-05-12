@@ -71,20 +71,20 @@ public class History {
 
         }
 
-        public Waste(String name, String quantity) {
-            this.name = name;
+        public Waste(String ingredient, String quantity) {
+            this.ingredient = ingredient;
             this.quantity = quantity;
         }
 
-        private String name;
+        private String ingredient;
         private String quantity;
 
-        public void setName(String name) {
-            this.name = name;
+        public void setIngredient(String ingredient) {
+            this.ingredient = ingredient;
         }
 
-        public String getName() {
-            return name;
+        public String getIngredient() {
+            return ingredient;
         }
 
         public void setQuantity(String quantity) {

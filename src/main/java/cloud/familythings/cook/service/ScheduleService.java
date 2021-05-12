@@ -68,8 +68,6 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
 
-        List<FinishedSchedule.Waste> wasted = finished.getWastes();
-
         LocalDate finishedAt = LocalDate.now();
 
         History history = new History();
@@ -78,8 +76,10 @@ public class ScheduleService {
         history.setScheduledOn(schedule.getScheduledOn());
         history.setFinishedAt(finishedAt);
 
+        List<FinishedSchedule.Waste> wasted = finished.getWastes();
+
         history.setWastes(wasted.stream()
-                .map(w -> new History.Waste(w.getName(), w.getQuantity()))
+                .map(w -> new History.Waste(w.getIngredient(), w.getQuantity()))
                 .collect(toList()));
 
         historyRepository.save(history);
