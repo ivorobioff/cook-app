@@ -24,7 +24,7 @@ public class Dish {
 
     @NotEmpty
     @Distinctive(byField = "name", caseInsensitive = true)
-    private List<@Valid RequiredIngredient> requiredIngredients;
+    private List<@Valid Ingredient> ingredients;
 
     private LocalDate lastFinishedAt;
 
@@ -52,12 +52,12 @@ public class Dish {
         this.notes = notes;
     }
 
-    public void setRequiredIngredients(List<RequiredIngredient> requiredIngredients) {
-        this.requiredIngredients = requiredIngredients;
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
     }
 
-    public List<RequiredIngredient> getRequiredIngredients() {
-        return requiredIngredients;
+    public List<Ingredient> getIngredients() {
+        return ingredients;
     }
 
     public void setLastFinishedAt(LocalDate lastFinishedAt) {
@@ -68,7 +68,7 @@ public class Dish {
         return lastFinishedAt;
     }
 
-    public static class RequiredIngredient {
+    public static class Ingredient {
 
         @NotBlank
         private String name;

@@ -76,11 +76,7 @@ public class ScheduleService {
         history.setScheduledOn(schedule.getScheduledOn());
         history.setFinishedAt(finishedAt);
 
-        List<FinishedSchedule.Waste> wasted = finished.getWastes();
-
-        history.setWastes(wasted.stream()
-                .map(w -> new History.Waste(w.getIngredient(), w.getQuantity()))
-                .collect(toList()));
+        history.setIngredients(finished.getIngredients());
 
         historyRepository.save(history);
 

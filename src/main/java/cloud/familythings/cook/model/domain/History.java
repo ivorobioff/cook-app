@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.util.List;
+import cloud.familythings.cook.model.domain.Dish.Ingredient;
 
 @Document("histories")
 public class History {
@@ -15,7 +16,7 @@ public class History {
     private String notes;
     private LocalDate scheduledOn;
     private LocalDate finishedAt;
-    private List<Waste> wastes;
+    private List<Ingredient> ingredients;
 
     public String getId() {
         return id;
@@ -57,42 +58,11 @@ public class History {
         this.finishedAt = finishedAt;
     }
 
-    public void setWastes(List<Waste> wastes) {
-        this.wastes = wastes;
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
     }
 
-    public List<Waste> getWastes() {
-        return wastes;
-    }
-
-    public static class Waste {
-
-        public Waste() {
-
-        }
-
-        public Waste(String ingredient, String quantity) {
-            this.ingredient = ingredient;
-            this.quantity = quantity;
-        }
-
-        private String ingredient;
-        private String quantity;
-
-        public void setIngredient(String ingredient) {
-            this.ingredient = ingredient;
-        }
-
-        public String getIngredient() {
-            return ingredient;
-        }
-
-        public void setQuantity(String quantity) {
-            this.quantity = quantity;
-        }
-
-        public String getQuantity() {
-            return quantity;
-        }
+    public List<Ingredient> getIngredients() {
+        return ingredients;
     }
 }
